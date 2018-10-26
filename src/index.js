@@ -1,12 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import './index.css'
+import AppState from './AppState'
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const props = {
+    links: [{
+        id: 1,
+        name: 'Desconto de 5% pra todo mundo!',
+        url: 'https://www.google.com.br/',
+        clicks: 4,
+        finishedAt: null,
+    }, {
+        id: 2,
+        name: 'Desconto de 20% pra todo mundo!',
+        url: 'https://www.xxx.com.br/',
+        clicks: 2,
+        finishedAt: '2018-10-26T13:56:38+00:00',
+    }],
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+ReactDOM.render(<AppState {...props} />, document.getElementById('root'))
