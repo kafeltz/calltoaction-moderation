@@ -18,13 +18,13 @@ const css = {
     white: '#FFF',
 }
 
-const Root = styled.div`
+const StyledRoot = styled.div`
     background: ${css.grayLighter};
     height: 100%;
     overflow-y: auto;
 `
 
-const Button = styled.button`
+const StyledButton = styled.button`
     -webkit-font-smoothing: antialiased;
     background-color: ${css.red};
     border-radius: 3px;
@@ -60,7 +60,7 @@ const Button = styled.button`
     }
 `
 
-const Input = styled.input`
+const StyledInput = styled.input`
     background-color: ${css.white};
     border-radius: 3px;
     border: 1px solid ${css.grayLight};
@@ -111,7 +111,7 @@ const Input = styled.input`
     }
 `
 
-const Title = styled.div`
+const StyledTitle = styled.div`
     font-family: 'Roboto', Arial, sans-serif;
     font-size: 18px;
     line-height: 100%;
@@ -121,7 +121,7 @@ const Title = styled.div`
     color: ${css.black};
 `
 
-const SharedContentForm = styled.div`
+const StyledSharedContentForm = styled.div`
     border-bottom: 1px solid #cfd2d5;
     background: #fff;
     padding: 20px 15px;
@@ -173,10 +173,10 @@ class App extends React.Component {
     static propTypes = {
         links: PropTypes.arrayOf(PropTypes.shape({
             clicks: PropTypes.number.isRequired,
+            finishedAt: PropTypes.string,
             id: PropTypes.number.isRequired,
             name: PropTypes.string.isRequired,
             url: PropTypes.string.isRequired,
-            finishedAt: PropTypes.string,
         })),
         name: PropTypes.string,
         onCreate: PropTypes.func.isRequired,
@@ -196,16 +196,16 @@ class App extends React.Component {
         const { name, url } = props
 
         this.state = {
+            isValid: null,
             name: name,
             url: url,
-            isValid: null,
         }
     }
 
     handleNameOnChange = e => {
-        e.stopPropagation()
+        const name = e.currentTarget.value
 
-        const name = e.currentTarget.value.trim()
+        e.stopPropagation()
 
         this.setState({ name: name })
     }
@@ -222,12 +222,12 @@ class App extends React.Component {
         const { onCreate } = this.props
         const { name, url } = this.state
 
-        e.stopPropagation()
-
         const payload = {
             name,
             url,
         }
+
+        e.stopPropagation()
 
         onCreate(payload)
 
@@ -237,9 +237,8 @@ class App extends React.Component {
         })
     }
 
-    handleFinishClick = e => {
+    handleFinishClick = (e, id) => {
         const { onFinish } = this.props
-        const { id } = e.currentTarget.dataset
 
         e.stopPropagation()
 
@@ -248,10 +247,9 @@ class App extends React.Component {
 
     isFormValid = e => {
         const { name, url } = this.state
+        const isValid = !is.empty(name) && is.url(url)
 
         e.stopPropagation()
-
-        const isValid = !is.empty(name) && is.url(url)
 
         this.setState({ isValid: isValid })
     }
@@ -263,6 +261,8 @@ class App extends React.Component {
         const isDisabled = !isValid
 
         const Links = links.map(l => {
+            const isFinished = !is.null(l.finished_at)
+
             return (
                 <SharedContentItem key={l.id}>
                     <label>Título</label>
@@ -274,25 +274,25 @@ class App extends React.Component {
                     <label>Número de cliques</label>
                     <p>{l.clicks}</p>
 
-                    {!is.null(l.finishedAt) && <Button type="button" onClick={this.handleFinishClick} data-id={l.id}>Encerrar</Button>}
+                    {!isFinished && <StyledButton type="button" onClick={e => this.handleFinishClick(e, l.id)}>Encerrar</StyledButton>}
                 </SharedContentItem>
             )
         })
 
         return (
-            <Root>
-                <SharedContentForm>
-                    <Title>Compartilhar link</Title>
+            <StyledRoot>
+                <StyledSharedContentForm>
+                    <StyledTitle>Compartilhar link</StyledTitle>
 
-                    <Input type="text" placeholder="Título do link" value={name} onChange={this.handleNameOnChange} onKeyUp={this.isFormValid} />
+                    <StyledInput type="text" placeholder="Título do link" value={name} onChange={this.handleNameOnChange} onKeyUp={this.isFormValid} />
 
-                    <Input type="text" placeholder="URL de acesso" value={url} onChange={this.handleUrlOnChange} onKeyUp={this.isFormValid} />
+                    <StyledInput type="text" placeholder="URL de acesso" value={url} onChange={this.handleUrlOnChange} onKeyUp={this.isFormValid} />
 
-                    <Button type="button" disabled={isDisabled} onClick={this.handleShareClick}>Compartilhar</Button>
-                </SharedContentForm>
+                    <StyledButton type="button" disabled={isDisabled} onClick={this.handleShareClick}>Compartilhar</StyledButton>
+                </StyledSharedContentForm>
 
                 {Links}
-            </Root>
+            </StyledRoot>
         )
     }
 }
